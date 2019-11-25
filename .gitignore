@@ -1,3 +1,10 @@
+# Application specific rules
+
+/bison/syntax.cc
+/bison/syntax.h
+/bison/location.hh
+
+# Below are common gitignore rules
 
 # Created by https://www.gitignore.io/api/c++,cmake,macos,jetbrains+all,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=c++,cmake,macos,jetbrains+all,visualstudiocode
