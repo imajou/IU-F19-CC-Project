@@ -6,6 +6,9 @@ yy::parser::symbol_type yylex(Driver& driver) {
     char c;
 
     while (driver.file.get(c)) {
+        if (is_newline(c)) {
+            driver.location.lines();
+        }
         if (is_space(c)) {
             // Skip spaces and new line characters
         }
@@ -26,7 +29,7 @@ yy::parser::symbol_type yylex(Driver& driver) {
 }
 
 
-yy::parser::symbol_type parseString(Driver& driver) {
+yy::parser::symbol_type parse_string(Driver& driver) {
     char c;
     std::string value = "";
 
@@ -86,30 +89,22 @@ yy::parser::symbol_type parse_number(Driver& driver, char first) {
 
 
 yy::parser::symbol_type parse_identifier(Driver& driver) {
-    Token token;
+    char c;
+    int token;
     std::string value = "";
 
-    while (src_iter != src.end() && (isLetter(*src_iter) || isDigit(*src_iter))) {
-        value += *src_iter;
-        src_iter++;
+    while (driver.file.get(c) && (is_letter(c) || is_digit(c))) {
+        value.push_back(c);
     }
 
-    if (src_iter != src.end() && *src_iter == '*') {
-        value += *src_iter;
-        src_iter++;
+    try {
+        token = keywords.at(value);
+    } catch(std::out_of_range&) {
+        // If keyword not found then it is an identifier
+        return yy::parser::make_IDENTIFIER(value, driver.location);
     }
 
-    ClassName class_name = symbol_table.find(value);
-
-    if (class_name == ClassName::None) {
-        class_name = ClassName::Ident;
-        symbol_table.insert(value, class_name);
-    }
-
-    token.class_name = class_name;
-    token.value = value;
-
-    return token;
+    return yy::parser::symbol_type(token, driver.location);
 }
 
 yy::parser::symbol_type parse_symbol(Driver& driver, char first) {

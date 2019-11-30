@@ -17,6 +17,7 @@
 
 %code {
     #include "driver.h"
+    yy::parser::symbol_type yylex(Driver& driver);
 }
 
 // Define a token prefix to avoid collisions
@@ -26,6 +27,9 @@
 // Keyword tokens
 %token CLASS EXTENDS IS END VAR METHOD THIS
 %token WHILE LOOP IF THEN ELSE RETURN 
+
+// Identifier
+%token <std::string> IDENTIFIER
 
 // Symbol tokens
 %token LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
@@ -51,7 +55,7 @@ compilation_unit
 
 %%
 
-void yyerror(const char* message) {
-    std::cerr << "Parse error: " << message << std::endl;
+void yy::parser::error(const location_type& location, const std::string& message) {
+    std::cerr << "Parse error (at " << location << "): " << message << std::endl;
     std::exit(EXIT_FAILURE);
 }

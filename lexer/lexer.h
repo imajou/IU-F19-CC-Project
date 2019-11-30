@@ -1,8 +1,13 @@
 #ifndef LEXER_H_
 #define LEXER_H_
 
+#include <map>
+#include <string>
+
 #include "../bison/syntax.h"
 #include "../bison/driver.h"
+
+std::map<std::string, int> keywords;
 
 yy::parser::symbol_type yylex(Driver& driver);
 

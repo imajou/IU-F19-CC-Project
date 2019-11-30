@@ -1,8 +1,13 @@
 #include "checkers.h"
 
 
+bool is_newline(char c) {
+    return c == '\n';
+}
+
+
 bool is_space(char c) {
-    return c == ' ' || c == '\n' || c == '\t';
+    return c == ' ' || c == '\t';
 }
 
 
