@@ -4,6 +4,12 @@
 /bison/syntax.h
 /bison/location.hh
 
+# Vim
+*.sw[op]
+
+# Bison
+*.output
+
 # Below are common gitignore rules
 
 # Created by https://www.gitignore.io/api/c++,cmake,macos,jetbrains+all,visualstudiocode

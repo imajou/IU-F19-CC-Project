@@ -41,6 +41,7 @@
 %token <int> INTEGER
 %token <float> REAL
 %token <bool> BOOLEAN
+%token TRUE FALSE
 
 // The EOF token
 %token END_OF_FILE 0
@@ -50,7 +51,7 @@
 %%
 
 compilation_unit
-    : /* empty */
+    : VAR INTEGER STRING TRUE
     ;
 
 %%
