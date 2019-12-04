@@ -3,7 +3,7 @@
 
 #include <map>
 #include <fstream>
-#include "syntax.h"
+#include "syntax.hh"
 
 class Driver {
 private:

@@ -4,8 +4,8 @@
 #include <map>
 #include <string>
 
-#include "../bison/syntax.h"
-#include "../bison/driver.h"
+#include "../parser/syntax.hh"
+#include "../parser/driver.hh"
 
 using namespace yy;
 

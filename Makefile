@@ -3,10 +3,20 @@ CFLAGS=-Wall -std=c++11
 
 BISON=bison --debug
 
-all: main
+all: reset main clean
 
-bison/syntax.cc: bison/syntax.yy
-	$(BISON) bison/syntax.yy --output=bison/syntax.cc --defines=bison/syntax.h
+clean:
+	rm -rf lexer/*.gch parser/*.gch
 
-main: main.cc bison/driver.cc bison/syntax.cc bison/syntax.h lexer/checkers.cc lexer/lexer.cc
-	$(CC) $(CFLAGS) main.cc bison/driver.cc bison/syntax.cc bison/syntax.h lexer/checkers.cc lexer/lexer.cc
+reset:
+	rm -rf parser/syntax.cc parser/syntax.hh parser/location.hh
+	rm -rf *.o *.out
+
+parser/syntax.cc: parser/syntax.yy
+	$(BISON) parser/syntax.yy --output=parser/syntax.cc
+
+main: parser/syntax.cc parser/syntax.hh parser/driver.cc lexer/checkers.cc lexer/lexer.cc
+	$(CC) $(CFLAGS) parser/syntax.cc parser/syntax.hh parser/location.hh \
+	    parser/driver.cc parser/driver.hh \
+	    lexer/checkers.cc lexer/lexer.cc \
+	    main.cc

@@ -1,8 +1,8 @@
 # Application specific rules
 
-/bison/syntax.cc
-/bison/syntax.h
-/bison/location.hh
+/parser/syntax.cc
+/parser/syntax.hh
+/parser/location.hh
 
 # Vim
 *.sw[op]

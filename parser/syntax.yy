@@ -1,6 +1,8 @@
 %require "3.2"
 %language "c++"
 
+%defines
+
 %define api.token.constructor
 %define api.value.type variant
 
@@ -16,7 +18,7 @@
 %locations
 
 %code {
-    #include "driver.h"
+    #include "driver.hh"
     yy::parser::symbol_type yylex(Driver& driver);
 }
 

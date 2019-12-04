@@ -14,5 +14,5 @@ This can be done with the following command:
 
 ```bash
 # Bison binaries should be installaed in the system
-bison syntax.yy --output=syntax.cc --defines=syntax.h
+bison syntax.yy --output=syntax.cc --defines=syntax.hh
 ```

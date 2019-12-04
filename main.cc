@@ -1,5 +1,5 @@
 #include <iostream>
-#include "bison/driver.h"
+#include "parser/driver.hh"
 
 int main(int argc, char *argv[]) {
     // TODO: define keywords
