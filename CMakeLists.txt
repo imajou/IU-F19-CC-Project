@@ -5,10 +5,13 @@ set(CMAKE_CXX_STANDARD 11)
 
 find_package(bison)
 
-bison_target(PARSER parser/syntax.yy parser/syntax.cc)
+bison_target(PARSER parser/syntax.yy parser/syntax.cc DEFINES_FILE parser/syntax.hh)
+
+message(${BISON_PARSER_OUTPUTS})
 
 add_executable(IU_F19_CC_Project
         ${BISON_PARSER_OUTPUTS}
         parser/driver.cc parser/driver.hh
-        lexer/lexer.cc lexer/checkers.cc
+        lexer/lexer.cc lexer/lexer.hh
+        lexer/checkers.cc lexer/checkers.hh
         main.cc)

@@ -1,7 +1,11 @@
 %require "3.2"
 %language "c++"
 
+// Request header file generation
 %defines
+
+// Request locations tracking
+%locations
 
 %define api.token.constructor
 %define api.value.type variant
@@ -14,8 +18,6 @@
 // The parsing context
 %param { Driver& driver }
 
-// Request locations tracking
-%locations
 
 %code {
     #include "driver.hh"
