@@ -1,10 +1,10 @@
 #include "driver.hh"
 
 
-Driver::Driver() { }
+Driver::Driver() {}
 
 
-int Driver::parse(const std::string& filename) {
+int Driver::parse(const std::string &filename) {
     // Read the file
     file = std::ifstream(filename);
     // Run the Bison parser

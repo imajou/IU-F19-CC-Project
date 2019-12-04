@@ -4,27 +4,23 @@
 using namespace yy;
 
 
-parser::symbol_type yylex(Driver& driver) {
+parser::symbol_type yylex(Driver &driver) {
     char c;
 
     while (driver.file.get(c)) {
         if (is_newline(c)) {
             driver.location.lines();
             continue;
-        }
-        else if (is_space(c)) {
+        } else if (is_space(c)) {
             // Skip spaces and new line characters
             continue;
-        }
-        else if (is_digit(c)) {
+        } else if (is_digit(c)) {
             driver.file.unget();
             return parse_number(driver);
-        }
-        else if (is_letter(c)) {
+        } else if (is_letter(c)) {
             driver.file.unget();
             return parse_identifier(driver);
-        }
-        else if (c == '"') {
+        } else if (c == '"') {
             return parse_string(driver);
         }
 
@@ -36,7 +32,7 @@ parser::symbol_type yylex(Driver& driver) {
 }
 
 
-parser::symbol_type parse_string(Driver& driver) {
+parser::symbol_type parse_string(Driver &driver) {
     char c;
     std::string value = "";
 
@@ -46,7 +42,7 @@ parser::symbol_type parse_string(Driver& driver) {
 
     if (c != '"') {
         throw parser::syntax_error(driver.location,
-                "String literals should be enclosed");
+                                   "String literals should be enclosed");
     }
 
     std::cout << "Parsed string value: " << value << std::endl;
@@ -55,7 +51,7 @@ parser::symbol_type parse_string(Driver& driver) {
 }
 
 
-parser::symbol_type parse_number(Driver& driver) {
+parser::symbol_type parse_number(Driver &driver) {
     char c;
     std::string str_value = "";
 
@@ -80,7 +76,7 @@ parser::symbol_type parse_number(Driver& driver) {
 
             if (driver.file.get(c) || !is_digit(c)) {
                 throw parser::syntax_error(driver.location,
-                        "Exponents should be ended with a number");
+                                           "Exponents should be ended with a number");
             }
 
             while (driver.file.get(c) && is_digit(c)) {
@@ -103,7 +99,7 @@ parser::symbol_type parse_number(Driver& driver) {
 }
 
 
-parser::symbol_type parse_identifier(Driver& driver) {
+parser::symbol_type parse_identifier(Driver &driver) {
     char c;
     int token;
     std::string value = "";
@@ -117,7 +113,7 @@ parser::symbol_type parse_identifier(Driver& driver) {
 
     try {
         token = keywords.at(value);
-    } catch(std::out_of_range&) {
+    } catch (std::out_of_range &) {
         // If keyword not found then it is an identifier
         return parser::make_IDENTIFIER(value, driver.location);
     }
@@ -125,7 +121,7 @@ parser::symbol_type parse_identifier(Driver& driver) {
     return parser::symbol_type(token, driver.location);
 }
 
-parser::symbol_type parse_symbol(Driver& driver) {
+parser::symbol_type parse_symbol(Driver &driver) {
     char c;
     driver.file.get(c);
 

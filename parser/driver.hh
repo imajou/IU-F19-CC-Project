@@ -16,7 +16,7 @@ public:
 
     Driver();
 
-    int parse(const std::string& filename);
+    int parse(const std::string &filename);
 };
 
 #endif  // DRIVER_H_

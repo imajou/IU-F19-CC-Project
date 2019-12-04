@@ -10,17 +10,18 @@ class Node {
 public:
     std::string value;
     ClassName class_name;
-    Node* next; 
+    Node *next;
 
 public:
     Node();
+
     Node(std::string value, ClassName class_name);
 };
 
 
 class SymbolTable {
 public:
-    Node* nodes[MAX_HASH];
+    Node *nodes[MAX_HASH];
 
 public:
     SymbolTable();
