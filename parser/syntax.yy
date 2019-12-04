@@ -55,8 +55,159 @@
 %%
 
 compilation_unit
-    : VAR INTEGER STRING TRUE
-    ;
+       : ClassDeclarations
+       ;
+
+
+ClassDeclarations
+       : /* empty */
+       | AssertClass ClassDeclarations
+       ;
+
+AssertClass
+       : CLASS IDENTIFIER Extension ClassBody
+       ;
+
+Extension
+       : /* empty */
+       | EXTENDS Type
+       ;
+
+ClassBody
+       : IS              END
+       | IS ClassMembers END
+       ;
+
+ClassMembers
+       :              ClassMember
+       | ClassMembers ClassMember
+       ;
+
+ClassMember
+       : VariableDeclaration
+       | MethodDeclaration
+	   | ConstructorDeclaration
+       ;
+
+VariableDeclaration
+       : VAR IDENTIFIER COLON Expression
+       ;
+
+
+MethodDeclaration
+       : METHOD IDENTIFIER Parameters ReturnType MethodBody
+       ;
+
+ConstructorDeclaration
+	   : THIS Parameters IS MethodBody END
+	   ;
+
+ReturnType
+	   : /* empty */
+	   | COLON Type
+	   ;
+
+Parameters
+       : LEFT_PARENTHESIS               RIGHT_PARENTHESIS
+       | LEFT_PARENTHESIS ParameterList RIGHT_PARENTHESIS
+       ;
+
+ParameterList
+       :                     Parameter
+       | ParameterList COMMA Parameter
+       ;
+
+Parameter
+       : Type IDENTIFIER
+       ;
+
+
+MethodBody
+       : IS               END
+       | IS MethodMembers END
+       ;
+
+
+MethodMembers
+       :               MethodMember
+       | MethodMembers MethodMember
+       ;
+
+MethodMember
+       : ASSIGNMENTment
+       | IfMethodMember
+       | WhileMethodMember
+       | ReturnMethodMember
+       | MethodCall
+       | VariableDeclaration
+       ;
+
+ASSIGNMENTment
+       : IDENTIFIER ASSIGNMENT Expression
+       ;
+
+
+Primary
+       : IDENTIFIER
+	   | IntegerLiteral
+	   | RealLiteral
+	   | BooleanVal
+	   | THIS
+       ;
+Type
+       : IDENTIFIER
+	   | IntegerLiteral
+	   | RealLiteral
+	   | BooleanVal
+       ;
+
+IfMethodMember
+       : IF Expression THEN MethodMember END
+       | IF Expression THEN MethodMember ELSE MethodMember END
+       ;
+
+WhileMethodMember
+       : WHILE Expression LOOP MethodMember END
+       ;
+
+ReturnMethodMember
+       : RETURN Expression
+       | RETURN
+       ;
+
+MethodCalls
+       : MethodCall
+       | MethodCalls DOT MethodCall
+       ;
+
+MethodCall
+       : IDENTIFIER LEFT_PARENTHESIS              RIGHT_PARENTHESIS
+       | IDENTIFIER LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS
+       ;
+
+ArgumentList
+       :                    Expression
+       | ArgumentList COMMA Expression
+       ;
+
+
+Expression
+       : Primary DOT MethodCalls
+	   | Primary
+	   ;
+
+BooleanVal
+	   : TRUE
+	   | FALSE
+	   ;
+
+IntegerLiteral
+	   : INTEGER
+	   ;
+
+RealLiteral
+	   : REAL
+	   ;
 
 %%
 
