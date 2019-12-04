@@ -1,5 +1,5 @@
-#include "lexer.h"
-#include "checkers.h"
+#include "lexer.hh"
+#include "checkers.hh"
 
 using namespace yy;
 

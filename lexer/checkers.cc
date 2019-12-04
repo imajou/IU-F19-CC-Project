@@ -1,4 +1,4 @@
-#include "checkers.h"
+#include "checkers.hh"
 
 
 bool is_newline(char c) {
