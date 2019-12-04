@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-Wall -std=c++11
+CFLAGS=-Wall -fpermissive -std=c++11
 
 BISON=bison --debug
 

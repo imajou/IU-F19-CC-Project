@@ -9,7 +9,7 @@ parser::symbol_type yylex(Driver &driver) {
 
     while (driver.file.get(c)) {
         if (is_newline(c)) {
-            driver.location.lines();
+            std::move(driver.location).lines();
             continue;
         } else if (is_space(c)) {
             // Skip spaces and new line characters
@@ -28,7 +28,7 @@ parser::symbol_type yylex(Driver &driver) {
     }
 
     std::cout << "End of file" << std::endl;
-    return parser::make_END_OF_FILE(driver.location);
+    return parser::make_END_OF_FILE(std::move(driver.location));
 }
 
 
@@ -41,13 +41,13 @@ parser::symbol_type parse_string(Driver &driver) {
     }
 
     if (c != '"') {
-        throw parser::syntax_error(driver.location,
+        throw parser::syntax_error(std::move(driver.location),
                                    "String literals should be enclosed");
     }
 
     std::cout << "Parsed string value: " << value << std::endl;
 
-    return parser::make_STRING(value, driver.location);
+    return parser::make_STRING(value, std::move(driver.location));
 }
 
 
@@ -75,7 +75,7 @@ parser::symbol_type parse_number(Driver &driver) {
             }
 
             if (driver.file.get(c) || !is_digit(c)) {
-                throw parser::syntax_error(driver.location,
+                throw parser::syntax_error(std::move(driver.location),
                                            "Exponents should be ended with a number");
             }
 
@@ -88,14 +88,14 @@ parser::symbol_type parse_number(Driver &driver) {
 
         double value = std::stod(str_value);
         std::cout << "Number is double: " << value << std::endl;
-        return parser::make_REAL(value, driver.location);
+        return parser::make_REAL(value, std::move(driver.location));
     }
 
     driver.file.unget();
 
     int value = std::stoi(str_value);
     std::cout << "Number is integer: " << value << std::endl;
-    return parser::make_INTEGER(value, driver.location);
+    return parser::make_INTEGER(value, std::move(driver.location));
 }
 
 
@@ -115,10 +115,10 @@ parser::symbol_type parse_identifier(Driver &driver) {
         token = keywords.at(value);
     } catch (std::out_of_range &) {
         // If keyword not found then it is an identifier
-        return parser::make_IDENTIFIER(value, driver.location);
+        return parser::make_IDENTIFIER(value, std::move(driver.location));
     }
 
-    return parser::symbol_type(token, driver.location);
+    return parser::symbol_type(token, std::move(driver.location));
 }
 
 parser::symbol_type parse_symbol(Driver &driver) {
@@ -126,30 +126,30 @@ parser::symbol_type parse_symbol(Driver &driver) {
     driver.file.get(c);
 
     if (c == '(') {
-        return parser::make_LEFT_PARENTHESIS(driver.location);
+        return parser::make_LEFT_PARENTHESIS(std::move(driver.location));
     }
     if (c == ')') {
-        return parser::make_RIGHT_PARENTHESIS(driver.location);
+        return parser::make_RIGHT_PARENTHESIS(std::move(driver.location));
     }
     if (c == '[') {
-        return parser::make_LEFT_SQUARE_BRACKET(driver.location);
+        return parser::make_LEFT_SQUARE_BRACKET(std::move(driver.location));
     }
     if (c == ']') {
-        return parser::make_RIGHT_SQUARE_BRACKET(driver.location);
+        return parser::make_RIGHT_SQUARE_BRACKET(std::move(driver.location));
     }
     if (c == ',') {
-        return parser::make_COMMA(driver.location);
+        return parser::make_COMMA(std::move(driver.location));
     }
     if (c == '.') {
-        return parser::make_DOT(driver.location);
+        return parser::make_DOT(std::move(driver.location));
     }
     if (c == ':') {
         if (driver.file.get(c) && c == '=') {
-            return parser::make_ASSIGNMENT(driver.location);
+            return parser::make_ASSIGNMENT(std::move(driver.location));
         }
         driver.file.unget();
-        return parser::make_COLON(driver.location);
+        return parser::make_COLON(std::move(driver.location));
     }
 
-    throw parser::syntax_error(driver.location, "Unknown symbol");
+    throw parser::syntax_error(std::move(driver.location), "Unknown symbol");
 }
