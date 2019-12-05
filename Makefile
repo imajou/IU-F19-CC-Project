@@ -1,9 +1,12 @@
+include Makefile.test
+
 CC=g++
 CFLAGS=-Wall -fpermissive -std=c++11
-
 BISON=bison --debug
 
-all: reset main clean
+all: build
+
+build: reset compile clean
 
 clean:
 	rm -rf lexer/*.gch parser/*.gch
@@ -15,7 +18,7 @@ reset:
 syntax: parser/syntax.yy
 	$(BISON) parser/syntax.yy --output=parser/syntax.cc
 
-main: syntax
+compile: syntax
 	$(CC) $(CFLAGS) parser/syntax.cc parser/syntax.hh parser/location.hh \
 	    parser/driver.cc parser/driver.hh \
 	    lexer/lexer.cc lexer/lexer.hh \

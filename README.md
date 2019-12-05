@@ -27,6 +27,7 @@ Project <br>
 - `make clean` - remove intermediate files
 - `make reset` - remove build artifacts
 - `make syntax` - build parser with Bison
+- `make test` - run test run on language sources
 
 
 ## Structure
