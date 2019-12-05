@@ -1,4 +1,9 @@
-# F19 Compilers Construction Project
+# Object-oriented toy language LLVM compiler
+
+Innopolis University, 2019 <br>
+Compilers Construction <br>
+Project <br>
+
 
 ## Team
 
@@ -7,12 +12,25 @@
 * Elvira Salikhova
 * Alexander Solovyov
 
-## Installation
 
-The first step is to generate a source code from yacc-file.
-This can be done with the following command:
+## Prerequisites
 
-```bash
-# Bison binaries should be installaed in the system
-bison syntax.yy --output=syntax.cc --defines=syntax.hh
-```
+- *NIX OS (tested on Mac OS Catalina, Debian).
+- Bison 3.2+.
+- GCC or CLANG compiler for C++11.
+- Make
+
+
+## Makefile
+
+- `make` - build all
+- `make clean` - remove intermediate files
+- `make reset` - remove build artifacts
+- `make syntax` - build parser with Bison
+
+
+## Structure
+
+- `./lexer/` – handwritten lexical analyzer
+- `./parser/` - Bison-based parser and AST builder
+- `./test_src/` - example source files for test
