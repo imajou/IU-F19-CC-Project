@@ -24,6 +24,7 @@ parser::symbol_type yylex(Driver &driver) {
             return parse_string(driver);
         }
 
+        driver.file.unget();
         return parse_symbol(driver);
     }
 
@@ -63,11 +64,23 @@ parser::symbol_type parse_number(Driver &driver) {
 
     // Parsing a real
     if (c == '.') {
-        str_value.push_back(c);
+        driver.file.get(c);
+
+        if (!is_digit(c)) {
+            driver.file.unget();
+            driver.file.unget();
+
+            int value = std::stoi(str_value);
+            std::cout << "Number is integer: " << value << std::endl;
+            return parser::make_INTEGER(value, std::move(driver.location));
+        }
+
+        driver.file.unget();
+        str_value.push_back('.');
 
         while (driver.file.get(c) && is_digit(c)) { str_value.push_back(c); }
 
-        if (driver.file.get(c) && (c == 'E' || c == 'E')) {
+        if (driver.file.get(c) && (c == 'E' || c == 'e')) {
             str_value.push_back(c);
 
             if (driver.file.get(c) && (c == '+' || c == '-')) {

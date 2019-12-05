@@ -99,7 +99,7 @@ MethodDeclaration
     ;
 
 ConstructorDeclaration
-    : THIS Parameters IS MethodBody END
+    : THIS Parameters MethodBody
     ;
 
 ReturnType
@@ -118,7 +118,7 @@ ParameterList
     ;
 
 Parameter
-    : Type IDENTIFIER
+    : IDENTIFIER COLON Type
     ;
 
 
@@ -134,15 +134,15 @@ MethodMembers
     ;
 
 MethodMember
-    : ASSIGNMENTment
+    : ValueAssignment
     | IfMethodMember
     | WhileMethodMember
     | ReturnMethodMember
-    | MethodCall
+    | Expression
     | VariableDeclaration
     ;
 
-ASSIGNMENTment
+ValueAssignment
     : IDENTIFIER ASSIGNMENT Expression
     ;
 
@@ -176,6 +176,11 @@ ReturnMethodMember
    | RETURN
    ;
 
+ConstructorCall
+   : IDENTIFIER LEFT_PARENTHESIS              RIGHT_PARENTHESIS
+   | IDENTIFIER LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS
+   ;
+
 MethodCalls
    : MethodCall
    | MethodCalls DOT MethodCall
@@ -195,6 +200,7 @@ ArgumentList
 Expression
    : Primary DOT MethodCalls
    | Primary
+   | ConstructorCall
    ;
 
 BooleanVal
