@@ -1,0 +1,41 @@
+class Main is
+	var kek : 5.Plus(1)
+
+	method main() is
+	    var h : Human(120, 4, 70)
+	    h := h.grow()
+	end
+
+	method kek() is
+	    this.main()
+	    Animal()
+	end
+
+end
+
+class Animal is
+	var iq : 0
+	var limbs_number : 4
+	var weight : 4.0
+	var age : 0
+	this (iq_param: Integer, limbs_number_param: Integer, weight_param: Real) is
+ 		iq := iq_param
+		limbs_number := limbs_number_param
+		weight := weight_param
+	end
+
+	method grow() : Integer is
+		age := age.Plus(1)
+		return age
+	end
+
+end
+
+class Human extends Animal is
+    this (iq_param: Integer, limbs_number_param: Integer, weight_param: Real) is
+     		iq := iq_param
+    		limbs_number := limbs_number_param
+    		weight := weight_param
+    end
+
+end
