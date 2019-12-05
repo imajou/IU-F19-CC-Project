@@ -22,6 +22,7 @@ public:
 class Body : public Node {
 public:
     std::vector<BodyEntry> entries;
+
     Body(std::vector<BodyEntry> entries);
 };
 
@@ -29,11 +30,12 @@ public:
 class Identifier : public Node {
 public:
     std::string name;
+
     Identifier(std::string name);
 };
 
 
-class Expression : public Node{
+class Expression : public Node {
 public:
     Expression();
 };
@@ -48,28 +50,31 @@ public:
 class ClassName : public Primary {
 public:
     Identifier class_name;
+
     ClassName(Identifier class_name);
 };
 
 
-class MemberDeclaration : public Node{
+class MemberDeclaration : public Node {
 public:
     MemberDeclaration();
 };
 
 
-class ClassDeclaration : public  Node {
+class ClassDeclaration : public Node {
 public:
     ClassName class_name;
     ClassName base_class;
     std::vector<MemberDeclaration> member_declarations;
+
     ClassDeclaration(ClassName class_name, ClassName base_class, std::vector<MemberDeclaration> member_declarations);
 };
 
 
 class Program : public Node {
 public:
-    std::vector<ClassDeclaration>  classes;
+    std::vector<ClassDeclaration> classes;
+
     Program(std::vector<ClassDeclaration> classes);
 };
 
@@ -84,6 +89,7 @@ class VariableDeclaration : public BodyEntry, public MemberDeclaration {
 public:
     Identifier name;
     Expression expression;
+
     VariableDeclaration(Identifier name, Expression expression);
 };
 
@@ -92,6 +98,7 @@ class Assignment : public Statement {
 public:
     Identifier name;
     Expression expression;
+
     Assignment(Identifier name, Expression expression);
 };
 
@@ -100,6 +107,7 @@ class WhileStatement : public Statement {
 public:
     Expression condition;
     Body body;
+
     WhileStatement(Expression condition, Body body);
 };
 
@@ -107,6 +115,7 @@ public:
 class ReturnStatement : public Statement {
 public:
     Expression expression;
+
     ReturnStatement(Expression expression);
 };
 
@@ -116,6 +125,7 @@ public:
     Expression condition;
     Body main_body;
     Body alternative_body;
+
     IfStatement(Expression condition, Body main_body, Body alternative_body);
 };
 
@@ -124,6 +134,7 @@ class CallableDeclaration : public MemberDeclaration {
 public:
     std::vector<std::pair<Identifier, ClassName>> parameters;
     Body body;
+
     CallableDeclaration(std::vector<std::pair<Identifier, ClassName>> parameters, Body body);
 };
 
@@ -137,7 +148,9 @@ class MethodDeclaration : public CallableDeclaration {
 public:
     Identifier name;
     ClassName return_type;
-    MethodDeclaration(std::vector<std::pair<Identifier, ClassName>> parameters, Body body, Identifier name, ClassName return_type);
+
+    MethodDeclaration(std::vector<std::pair<Identifier, ClassName>> parameters, Body body, Identifier name,
+                      ClassName return_type);
 };
 
 
@@ -146,6 +159,7 @@ public:
     Expression base_expression;
     Identifier method;
     std::vector<Expression> arguments;
+
     MethodCall(Expression base_expression, Identifier method, std::vector<Expression> arguments);
 };
 
@@ -154,6 +168,7 @@ class Attribute : public Expression {
 public:
     Expression base_expression;
     Identifier attribute;
+
     Attribute(Expression base_expression, Identifier attribute);
 };
 
@@ -161,6 +176,7 @@ public:
 class IntegerLiteral : public Primary {
 public:
     int value;
+
     IntegerLiteral(int value);
 };
 
@@ -168,6 +184,7 @@ public:
 class RealLiteral : public Primary {
 public:
     double value;
+
     RealLiteral(double value);
 };
 
@@ -175,6 +192,7 @@ public:
 class BooleanLiteral : public Primary {
 public:
     bool value;
+
     BooleanLiteral(bool value);
 };
 
