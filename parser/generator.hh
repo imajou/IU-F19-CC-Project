@@ -21,7 +21,6 @@ public:
 
 class GeneratorContext {
     llvm::Function *main_function;
-    std::unique_ptr<llvm::Module> module_owner;
 
     std::stack<GeneratorBlock> blocks;
 

@@ -2,7 +2,10 @@
 #include "ast.hh"
 
 #include <llvm/IR/DerivedTypes.h>
+#include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/ExecutionEngine/GenericValue.h>
 
+#include <iostream>
 #include <vector>
 
 
@@ -12,10 +15,7 @@ GeneratorBlock::GeneratorBlock(llvm::BasicBlock *llvm_block) {
 
 
 GeneratorContext::GeneratorContext() {
-    module_owner = std::unique_ptr<llvm::Module>(
-        new llvm::Module("main", llvm_context)
-    );
-    module = module_owner.get();
+    module = new llvm::Module("main", llvm_context);
 }
 
 
@@ -38,6 +38,7 @@ void GeneratorContext::generate_code(Program &root) {
     pop_block();
 
     // Print the resulting program
+    std::cout << "\n-----------------\n" << std::endl;
     module->print(llvm::errs(), nullptr);
 }
 
