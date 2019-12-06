@@ -175,23 +175,29 @@ public:
 };
 
 
-
-class MethodCall : public Expression {
+class ClassExpression : public Expression {
 public:
     Expression* base_expression;
-    Identifier* method;
-    std::vector<Expression*> arguments;
+    Identifier* name;
 
-    MethodCall(Expression* base_expression, Identifier* method, std::vector<Expression*> arguments);
+    ClassExpression(Identifier* name);
+    ClassExpression(Expression* base_expression, Identifier* name);
 };
 
 
-class Attribute : public Expression {
+class MethodCall : public ClassExpression {
 public:
-    Expression* base_expression;
-    Identifier* attribute;
+    std::vector<Expression*> arguments;
 
-    Attribute(Expression* base_expression, Identifier* attribute);
+    MethodCall(Identifier* name, std::vector<Expression*> arguments);
+    MethodCall(Expression* base_expression, Identifier* name, std::vector<Expression*> arguments);
+};
+
+
+class Attribute : public ClassExpression {
+public:
+    Attribute(Identifier* name);
+    Attribute(Expression* base_expression, Identifier* name);
 };
 
 

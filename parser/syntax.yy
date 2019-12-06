@@ -1,4 +1,4 @@
-, $5, $3; %%require "3.2"
+%require "3.2"
 %language "c++"
 
 // Request header file generation
@@ -13,8 +13,32 @@
 %code requires {
     #include <vector>
     #include <string>
+
     class Driver;
     class ClassDeclaration;
+    class ClassName;
+    class MemberDeclaration;
+    class VariableDeclaration;
+    class MethodDeclaration;
+    class ConstructorDeclaration;
+    class Parameter;
+    class Body;
+    class BodyEntry;
+    class Assignment;
+    class Primary;
+    class Identifier;
+    class IntegerLiteral;
+    class RealLiteral;
+    class BooleanLiteral;
+    class SelfPointer;
+    class IfStatement;
+    class WhileStatement;
+    class ReturnStatement;
+    class ConstructorCall;
+    class Expression;
+    class ClassExpression;
+    class Attribute;
+    class MethodCall;
 }
 
 // The parsing context
@@ -56,6 +80,39 @@
 %token END_OF_FILE 0
 
 %type <std::vector<ClassDeclaration*>> ClassDeclarations
+%type <ClassDeclaration*> AssertClass
+%type <ClassName*> Extension
+%type <ClassName*> ClassName
+%type <std::vector<MemberDeclaration*>> ClassBody
+%type <std::vector<MemberDeclaration*>> ClassMembers
+%type <MemberDeclaration*> ClassMember
+%type <VariableDeclaration*> VariableDeclaration
+%type <MethodDeclaration*> MethodDeclaration
+%type <ConstructorDeclaration*> ConstructorDeclaration
+%type <ClassName*> ReturnType
+%type <std::vector<Parameter*>> Parameters
+%type <std::vector<Parameter*>> ParameterList
+%type <Parameter*> Parameter
+%type <Body*> MethodBody
+%type <Body*> Body
+%type <std::vector<BodyEntry*>> BodyMembers
+%type <BodyEntry*> BodyMember
+%type <Assignment*> ValueAssignment
+%type <Primary*> Primary
+%type <Identifier*> Identifier
+%type <IntegerLiteral*> IntegerLiteral
+%type <RealLiteral*> RealLiteral
+%type <BooleanLiteral*> BooleanVal
+%type <SelfPointer*> ThisLiteral
+%type <IfStatement*> IfStatement
+%type <WhileStatement*> WhileStatement
+%type <ReturnStatement*> ReturnStatement
+%type <ConstructorCall*> ConstructorCall
+%type <ClassExpression*> ClassExpressions
+%type <ClassExpression*> ClassExpression
+%type <std::vector<Expression*>> Call
+%type <std::vector<Expression*>> ArgumentList
+%type <Expression*> Expression
 
 %start CompilationUnit
 
@@ -67,7 +124,7 @@ CompilationUnit
 
 
 ClassDeclarations
-    : /* empty */ { $$ = std::vector<ClassDeclaration>(); }
+    : /* empty */ { $$ = std::vector<ClassDeclaration*>(); }
     | AssertClass ClassDeclarations  { $2.push_back($1); $$ = $2; }
     ;
 
@@ -76,7 +133,7 @@ AssertClass
     ;
 
 Extension
-    : /* empty */
+    : /* empty */ { $$ = nullptr; }
     | EXTENDS ClassName { $$ = $2; }
     ;
 
@@ -118,7 +175,7 @@ ReturnType
     ;
 
 Parameters
-    : LEFT_PARENTHESIS               RIGHT_PARENTHESIS { $$ = nullptr; }
+    : LEFT_PARENTHESIS               RIGHT_PARENTHESIS { $$ = std::vector<Parameter*>(); }
     | LEFT_PARENTHESIS ParameterList RIGHT_PARENTHESIS { $$ = $2; }
     ;
 
@@ -133,20 +190,25 @@ Parameter
 
 
 MethodBody
-    : IS MethodMembers END { $$ = new Body($1); }
+    : IS Body END { $$ = $2; }
     ;
 
 
-MethodMembers
+Body
+    : BodyMembers { $$ = new Body($1); }
+    ;
+
+
+BodyMembers
     : /* empty */ { $$ = std::vector<BodyEntry*>(); }
-    | MethodMember MethodMembers { $2.push_back($1); $$ = $2; }
+    | BodyMember BodyMembers { $2.push_back($1); $$ = $2; }
     ;
 
-MethodMember
+BodyMember
     : ValueAssignment { $$ = $1; }
-    | IfMethodMember { $$ = $1; }
-    | WhileMethodMember { $$ = $1; }
-    | ReturnMethodMember { $$ = $1; }
+    | IfStatement { $$ = $1; }
+    | WhileStatement { $$ = $1; }
+    | ReturnStatement { $$ = $1; }
     | Expression { $$ = $1; }
     | VariableDeclaration { $$ = $1; }
     ;
@@ -157,23 +219,27 @@ ValueAssignment
 
 
 Primary
-    : Identifier { $$ = $1; }
+    : ClassName { $$ = $1; }
     | IntegerLiteral { $$ = $1; }
     | RealLiteral { $$ = $1; }
     | BooleanVal { $$ = $1; }
-    | THIS { $$ = new SelfPointer(); }
+    | ThisLiteral { $$ = $1; }
     ;
 
-IfMethodMember
-    : IF Expression THEN MethodMembers END { $$ = new IfStatement($2, $4); }
-    | IF Expression THEN MethodMembers ELSE MethodMembers END { $$ = new IfStatement($2, $4, $6); }
+ThisLiteral
+    : THIS { $$ = new SelfPointer(); }
     ;
 
-WhileMethodMember
-    : WHILE Expression LOOP MethodMembers END { $$ = new WhileStatement($2, $4); }
+IfStatement
+    : IF Expression THEN Body END { $$ = new IfStatement($2, $4); }
+    | IF Expression THEN Body ELSE Body END { $$ = new IfStatement($2, $4, $6); }
     ;
 
-ReturnMethodMember
+WhileStatement
+    : WHILE Expression LOOP Body END { $$ = new WhileStatement($2, $4); }
+    ;
+
+ReturnStatement
     : RETURN Expression { $$ = new ReturnStatement($2); }
     | RETURN { $$ = nullptr; }
     ;
@@ -193,14 +259,14 @@ ClassExpression
     ;
 
 Call
-    : LEFT_PARENTHESIS              RIGHT_PARENTHESIS { $$ = std::vector<Expression>(); }
-    | LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS { $$ = $1; }
+    : LEFT_PARENTHESIS              RIGHT_PARENTHESIS { $$ = std::vector<Expression*>(); }
+    | LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS { $$ = $2; }
     ;
 
 
 ArgumentList
-    :                    Expression { $$ = std::vector<Expression>{$1}; }
-    | ArgumentList COMMA Expression { $1.push_back($2); $$ = $1; }
+    :                    Expression { $$ = std::vector<Expression*>{$1}; }
+    | ArgumentList COMMA Expression { $1.push_back($3); $$ = $1; }
     ;
 
 
@@ -212,7 +278,7 @@ Expression
 
 BooleanVal
     : TRUE { $$ = new BooleanLiteral(true); }
-    | FALSE { $$ = new BoolearLiteral(false); }
+    | FALSE { $$ = new BooleanLiteral(false); }
     ;
 
 IntegerLiteral

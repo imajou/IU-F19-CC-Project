@@ -74,12 +74,25 @@ ConstructorCall::ConstructorCall(ClassName* class_name, std::vector<Expression*>
         class_name(class_name), arguments(arguments) {};
 
 
-MethodCall::MethodCall(Expression* base_expression, Identifier* method, std::vector<Expression*> arguments) :
-        base_expression(base_expression), method(method), arguments(arguments) {};
+ClassExpression::ClassExpression(Identifier* name) :
+        name(name) {};
+
+ClassExpression::ClassExpression(Expression* base_expression, Identifier* name) :
+        base_expression(base_expression), name(name) {};
 
 
-Attribute::Attribute(Expression* base_expression, Identifier* attribute) :
-        base_expression(base_expression), attribute(attribute) {};
+MethodCall::MethodCall(Identifier* name, std::vector<Expression*> arguments) :
+        ClassExpression(name), arguments(arguments) {};
+
+MethodCall::MethodCall(Expression* base_expression, Identifier* name, std::vector<Expression*> arguments) :
+        ClassExpression(base_expression, name), arguments(arguments) {};
+
+
+Attribute::Attribute(Identifier* name) :
+        ClassExpression(name) {};
+
+Attribute::Attribute(Expression* base_expression, Identifier* name) :
+        ClassExpression(base_expression, name) {};
 
 
 Primary::Primary() {};
