@@ -1,10 +1,17 @@
-#ifndef AST_H_
+fndef AST_H_
 #define AST_H_
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
+
+class ClassDeclaration;
+class MemberDeclaration;
+
+
+typedef std::vector<ClassDeclaration*> ClassList;
+typedef std::vector<MemberDeclaration*> ClassMemberList;
 
 
 class Node {
@@ -21,9 +28,9 @@ public:
 
 class Body : public Node {
 public:
-    std::vector<BodyEntry> entries;
+    std::vector <BodyEntry> entries;
 
-    Body(std::vector<BodyEntry> entries);
+    Body(std::vector <BodyEntry> entries);
 };
 
 
@@ -65,17 +72,17 @@ class ClassDeclaration : public Node {
 public:
     ClassName class_name;
     ClassName base_class;
-    std::vector<MemberDeclaration> member_declarations;
+    std::vector <MemberDeclaration> member_declarations;
 
-    ClassDeclaration(ClassName class_name, ClassName base_class, std::vector<MemberDeclaration> member_declarations);
+    ClassDeclaration(ClassName class_name, ClassName base_class, std::vector <MemberDeclaration> member_declarations);
 };
 
 
 class Program : public Node {
 public:
-    std::vector<ClassDeclaration> classes;
+    std::vector <ClassDeclaration> classes;
 
-    Program(std::vector<ClassDeclaration> classes);
+    Program(std::vector <ClassDeclaration> classes);
 };
 
 
@@ -132,15 +139,17 @@ public:
 
 class CallableDeclaration : public MemberDeclaration {
 public:
-    std::vector<std::pair<Identifier, ClassName>> parameters;
+    std::vector <std::pair<Identifier, ClassName>> parameters;
     Body body;
 
-    CallableDeclaration(std::vector<std::pair<Identifier, ClassName>> parameters, Body body);
+    CallableDeclaration(std::vector <std::pair<Identifier, ClassName>> parameters, Body body);
 };
 
 
 class ConstructorDeclaration : public CallableDeclaration {
 public:
+    ConstructorDeclaration(std::vector <std::pair<Identifier, ClassName>> parameters,
+                           Body body);
 };
 
 
@@ -148,9 +157,10 @@ class MethodDeclaration : public CallableDeclaration {
 public:
     Identifier name;
     ClassName return_type;
+    std::vector <std::pair<Identifier, ClassName>> parameters;
 
-    MethodDeclaration(std::vector<std::pair<Identifier, ClassName>> parameters, Body body, Identifier name,
-                      ClassName return_type);
+    MethodDeclaration(Identifier name, std::vector <std::pair<Identifier, ClassName>> parameters, ClassName return_type,
+                      Body body);
 };
 
 
@@ -158,9 +168,9 @@ class MethodCall : public Expression {
 public:
     Expression base_expression;
     Identifier method;
-    std::vector<Expression> arguments;
+    std::vector <Expression> arguments;
 
-    MethodCall(Expression base_expression, Identifier method, std::vector<Expression> arguments);
+    MethodCall(Expression base_expression, Identifier method, std::vector <Expression> arguments);
 };
 
 
@@ -202,5 +212,35 @@ public:
     SelfPointer();
 };
 
+class Parameter : public Node {
+public:
+    Identifier identifier;
+    ClassName type;
+    Parameter(Identifier identifier, ClassName type);
+};
 
+class ParameterList : public Node {
+public:
+    Parameter parameter;
+    std::vector<Parameter>parameters;
+    ParameterList(parameter, std::vector<Parameter>parameters);
+}
+
+class Call : public Node {
+public:
+    Identifier identifier;
+    ArgumentList arguments;
+    Call(identifier, arguments);
+}
+
+class ArgumentList : public Node {
+public:
+    std::vector<Expreression> arguments;
+    ArgumentList(arguments);
+}
+
+class MethodCalls ; public Node {
+public:
+std::vector
+}
 #endif  // AST_H_

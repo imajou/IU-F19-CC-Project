@@ -56,9 +56,13 @@ IfStatement::IfStatement(Expression condition, Body main_body, Body alternative_
 CallableDeclaration::CallableDeclaration(std::vector<std::pair<Identifier, ClassName>> parameters, Body body) :
         parameters(parameters), body(body) {};
 
+ConstructorDeclaration::ConstructorDeclaration(std::vector <std::pair<Identifier, ClassName>> parameters,
+                                               Body body):
+        parameters(parameters), body(body) {};
 
-MethodDeclaration::MethodDeclaration(std::vector<std::pair<Identifier, ClassName>> parameters, Body body,
-                                     Identifier name, ClassName return_type) :
+
+MethodDeclaration::MethodDeclaration( Identifier name, std::vector<std::pair<Identifier, ClassName>> parameters, ClassName return_type,
+                                      Body body ) :
         CallableDeclaration(parameters, body), name(name), return_type(return_type) {};
 
 
@@ -90,3 +94,18 @@ ClassName::ClassName(Identifier class_name) :
 
 
 SelfPointer::SelfPointer() {};
+
+Parameter::Parameter(Identifier identifier, ClassName type) :
+        value(value), type(type) {};
+
+ParameterList::ParameterList(parameter, std::vector<Parameter>parameters):
+        parameter(parameter), parameters(parameters){};
+
+Call::Call(Identifier identifier, ArgumentList arguments)  :
+        identifier(identifier), arguments(arguments){};
+
+ArgumentList::ArgumentList():
+        arguments(arguments){};
+
+
+

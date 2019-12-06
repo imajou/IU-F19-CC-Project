@@ -1,4 +1,4 @@
-%require "3.2"
+, $5, $3; %%require "3.2"
 %language "c++"
 
 // Request header file generation
@@ -21,6 +21,8 @@
 
 %code {
     #include "driver.hh"
+  	#include "ast.hh"
+  	Node *programRoot;
     yy::parser::symbol_type yylex(Driver& driver);
 }
 
@@ -30,7 +32,7 @@
 
 // Keyword tokens
 %token CLASS EXTENDS IS END VAR METHOD THIS
-%token WHILE LOOP IF THEN ELSE RETURN 
+%token WHILE LOOP IF THEN ELSE RETURN
 
 // Identifier
 %token <std::string> IDENTIFIER
@@ -38,7 +40,7 @@
 // Symbol tokens
 %token LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
 %token LEFT_PARENTHESIS RIGHT_PARENTHESIS
-%token COMMA DOT COLON ASSIGNMENT 
+%token COMMA DOT COLON ASSIGNMENT
 
 // Literal tokens
 %token <std::string> STRING
@@ -55,145 +57,145 @@
 %%
 
 compilation_unit
-    : ClassDeclarations
+    : ClassDeclarations {programRoot = $1;}
     ;
 
 
 ClassDeclarations
-    : /* empty */
-    | AssertClass ClassDeclarations
+    : /* empty */ {$$ = nullptr}
+    | AssertClass ClassDeclarations  { std::vector<ClassDeclaration> a; $$ = Program(a.push_back($1);)}
     ;
 
 AssertClass
-    : CLASS IDENTIFIER Extension ClassBody
+    : CLASS IDENTIFIER Extension ClassBody { $$ = ClassDeclaration($2, $3, $4);}
     ;
 
 Extension
     : /* empty */
-    | EXTENDS Type
+    | EXTENDS Type {$$ = ClassName($2);}
     ;
 
 ClassBody
-    : IS              END
-    | IS ClassMembers END
+    : IS              END {$$ = nullptr}
+    | IS ClassMembers END {$$ = $2;}
     ;
 
 ClassMembers
-    :              ClassMember
-    | ClassMembers ClassMember
+    :              ClassMember {ClassDeclaration c = ClassDeclaration() ; $$ = c.member_declarations.push_back($<ClassMember>1)}
+    | ClassMembers ClassMember {$1.push_back($<ClassMember>2)}
     ;
 
 ClassMember
-    : VariableDeclaration
-    | MethodDeclaration
-    | ConstructorDeclaration
+    : VariableDeclaration {$$ = $1}
+    | MethodDeclaration {$$ = $1}
+    | ConstructorDeclaration {$$ = $1}
     ;
 
 VariableDeclaration
-    : VAR IDENTIFIER COLON Expression
+    : VAR IDENTIFIER COLON Expression {$$ = VariableDeclaration($2, $4);}
     ;
 
 
 MethodDeclaration
-    : METHOD IDENTIFIER Parameters ReturnType MethodBody
+    : METHOD IDENTIFIER Parameters ReturnType MethodBody {$$ = MethodDeclaration($2, $3, $4);}
     ;
 
 ConstructorDeclaration
-    : THIS Parameters MethodBody
+    : THIS Parameters MethodBody {$$ = ConstructorDeclaration($2, $3)}
     ;
 
 ReturnType
     : /* empty */
-    | COLON Type
+    | COLON Type {$$ = $1;}
     ;
 
 Parameters
-    : LEFT_PARENTHESIS               RIGHT_PARENTHESIS
-    | LEFT_PARENTHESIS ParameterList RIGHT_PARENTHESIS
+    : LEFT_PARENTHESIS               RIGHT_PARENTHESIS {$$ = nullptr}
+    | LEFT_PARENTHESIS ParameterList RIGHT_PARENTHESIS {$$ = $2}
     ;
 
 ParameterList
-    :                     Parameter
-    | ParameterList COMMA Parameter
+    :                     Parameter {$$ = ParameterList($1);}
+    | ParameterList COMMA Parameter {$$ = ParameterList($1, $3);}
     ;
 
 Parameter
-    : IDENTIFIER COLON Type
+    : IDENTIFIER COLON Type {$$ = Parameter($1, $3);}
     ;
 
 
 MethodBody
-    : IS               END
-    | IS MethodMembers END
+    : IS               END {$$ = nullptr}
+    | IS MethodMembers END {$$ = $1}
     ;
 
 
 MethodMembers
-    :               MethodMember
-    | MethodMembers MethodMember
+    :               MethodMember {Body b = Body(); $$ = b.entries.push_back($<MethodMember>1)}
+    | MethodMembers MethodMember {$1.push_back($<MethodMember>2)}
     ;
 
 MethodMember
-    : ValueAssignment
-    | IfMethodMember
-    | WhileMethodMember
-    | ReturnMethodMember
-    | Expression
-    | VariableDeclaration
+    : ValueAssignment {$$ = $1}
+    | IfMethodMember {$$ = $1}
+    | WhileMethodMember {$$ = $1}
+    | ReturnMethodMember {$$ = $1}
+    | Expression {$$ = $1}
+    | VariableDeclaration {$$ = $1}
     ;
 
 ValueAssignment
-    : IDENTIFIER ASSIGNMENT Expression
+    : IDENTIFIER ASSIGNMENT Expression {$$ = Assignment($1, $3);}
     ;
 
 
 Primary
     : IDENTIFIER
-    | IntegerLiteral
-    | RealLiteral
-    | BooleanVal
+    | IntegerLiteral {$$ = IntegerLiteral($1);}
+    | RealLiteral {$$ = RealLiteral($1);}
+    | BooleanVal {$$ = BooleanLiteral($1);}
     | THIS
     ;
 
 Type
     : IDENTIFIER
-    | IntegerLiteral
-    | RealLiteral
-    | BooleanVal
+    | IntegerLiteral {$$ = IntegerLiteral($1);}
+    | RealLiteral {$$ = RealLiteral($1);}
+    | BooleanVal {$$ = BooleanVal($1);}
     ;
 
 IfMethodMember
-   : IF Expression THEN MethodMember END
-   | IF Expression THEN MethodMember ELSE MethodMember END
+   : IF Expression THEN MethodMember END {$$ = IfStatement($2, $4);}
+   | IF Expression THEN MethodMember ELSE MethodMember END {$$ = IfStatement($2, $4, $6);}
    ;
 
 WhileMethodMember
-   : WHILE Expression LOOP MethodMember END
+   : WHILE Expression LOOP MethodMember END {$$ = WhileStatement($2, $4);}
    ;
 
 ReturnMethodMember
-   : RETURN Expression
+   : RETURN Expression {$$ = ReturnStatement($2);}
    | RETURN
    ;
 
 ConstructorCall
-   : IDENTIFIER LEFT_PARENTHESIS              RIGHT_PARENTHESIS
-   | IDENTIFIER LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS
+   : IDENTIFIER LEFT_PARENTHESIS              RIGHT_PARENTHESIS {$$ = nullptr;}
+   | IDENTIFIER LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS {$$ = Call($1, $3;}
    ;
 
 MethodCalls
-   : MethodCall
-   | MethodCalls DOT MethodCall
+   : MethodCall {$$ = $1;}
+   | MethodCalls DOT MethodCall {$$ = MethodCalls($1, $3);}
    ;
 
 MethodCall
-   : IDENTIFIER LEFT_PARENTHESIS              RIGHT_PARENTHESIS
-   | IDENTIFIER LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS
+   : IDENTIFIER LEFT_PARENTHESIS              RIGHT_PARENTHESIS {$$ = nullptr;}
+   | IDENTIFIER LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS {$$ = Call($1, $3;}
    ;
 
 ArgumentList
-   :                    Expression
-   | ArgumentList COMMA Expression
+   :                    Expression {$$ =$1;}
+   | ArgumentList COMMA Expression {$$ = ArgumentList($1, $3)}
    ;
 
 
