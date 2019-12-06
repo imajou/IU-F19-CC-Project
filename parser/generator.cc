@@ -1,6 +1,7 @@
 #include "generator.hh"
 #include "ast.hh"
 
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/ExecutionEngine/GenericValue.h>
@@ -39,8 +40,10 @@ void GeneratorContext::generate_code(Program &root) {
     );
 
     push_block(entry_block);
-    root.generate_code(*this);
+    root.generate_code(*this, nullptr);
     pop_block();
+
+    llvm::ReturnInst::Create(llvm_context, entry_block);
 
     // Print the resulting program
     module->print(*out, nullptr);

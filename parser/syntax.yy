@@ -126,7 +126,7 @@ CompilationUnit
 
 ClassDeclarations
     : /* empty */ { $$ = std::vector<ClassDeclaration*>(); }
-    | AssertClass ClassDeclarations  { $2.push_back($1); $$ = $2; }
+    | AssertClass ClassDeclarations  { $2.insert($2.begin(), $1); $$ = $2; }
     ;
 
 AssertClass
@@ -158,7 +158,7 @@ ClassMember
     ;
 
 VariableDeclaration
-    : VAR Identifier COLON Expression { $$ = new VariableDeclaration($2, $4); }
+    : VAR Identifier COLON ClassName { $$ = new VariableDeclaration($2, $4); }
     ;
 
 

@@ -1,9 +1,0 @@
-class Main is
-    this(a: Integer, b: Integer) is
-        return this.sum(a, b)
-    end
-
-    method sum(a: Integer, b: Integer): Integer is
-        return a.Plus(b)
-    end
-end

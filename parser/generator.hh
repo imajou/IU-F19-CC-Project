@@ -10,6 +10,7 @@
 #include <string>
 
 class Program;
+class ClassDeclaration;
 
 class GeneratorBlock {
 public:
@@ -30,6 +31,7 @@ class GeneratorContext {
     llvm::raw_fd_ostream *out;
 
 public:
+    std::map<std::string, ClassDeclaration*> classes;
     llvm::LLVMContext llvm_context;
     llvm::Module *module;
 

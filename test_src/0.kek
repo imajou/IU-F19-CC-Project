@@ -29,8 +29,8 @@ class Animal is
 end
 
 class Human extends Animal is
-	var knowLanguage : true
-    var status : 0
+	var knowLanguage : Boolean
+    var status : Integer
     this (iq_p : Integer, alive_p : Boolean, age_p : Integer, weight_p : Real, sex_p : Boolean, knowLanguage_p : Boolean, status_p : Integer) is
         iq := iq_p
         alive := alive_p
@@ -45,8 +45,8 @@ end
 
 
 class Student extends Human is
-	var averageSleep : 3
-    var averagePoints : 70.0
+	var averageSleep : Integer
+    var averagePoints : Real
     this (iq_p : Integer, alive_p : Boolean, age_p : Integer, weight_p : Real, sex_p : Boolean, knowLanguage_p : Boolean, status_p : Integer, averageSleep_p : Integer, averagePoints_p : Real) is
         iq := iq_p
         alive := alive_p
@@ -62,8 +62,8 @@ class Student extends Human is
 end
 
 class Employee extends Human is
-	var salary : 2000
-    var loveWork : false
+	var salary : Integer
+    var loveWork : Boolean
     this (iq_p : Integer, alive_p : Boolean, age_p : Integer, weight_p : Real, sex_p : Boolean, knowLanguage_p : Boolean, status_p : Integer, salary_p : Integer, loveWork_p : Boolean) is
         iq := iq_p
         alive := alive_p
@@ -79,7 +79,7 @@ class Employee extends Human is
 end
 
 class Chief extends Employee is
-	var goodChief : true
+	var goodChief : Boolean
 	this (iq_p : Integer, alive_p : Boolean, age_p : Integer, weight_p : Real, sex_p : Boolean, knowLanguage_p : Boolean, status_p : Integer, salary_p : Integer, loveWork_p : Boolean, goodChief_p : Boolean) is
         iq := iq_p
         alive := alive_p
