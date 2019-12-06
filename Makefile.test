@@ -1,6 +1,6 @@
 TEST_DIR="test_src"
 
-test: compile
+test: all
 	passed=0; \
 	for filename in ${TEST_DIR}/*.kek; \
 	do \

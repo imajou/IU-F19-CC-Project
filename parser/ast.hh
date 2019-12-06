@@ -76,6 +76,8 @@ public:
     std::vector<MemberDeclaration*> member_declarations;
 
     ClassDeclaration(ClassName* class_name, ClassName* base_class, std::vector<MemberDeclaration*> member_declarations);
+
+    llvm::Value *generate_code(GeneratorContext &context);
 };
 
 

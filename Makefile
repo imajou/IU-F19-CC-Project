@@ -1,4 +1,4 @@
-include Makefile.test
+.PHONY=all
 
 CC := g++
 CFLAGS := -Wall -fpermissive -std=c++11
@@ -37,3 +37,5 @@ post-compile:
 
 link:
 	$(CC) out/*.o $(LLVM_LIBS) -lpthread -ltinfo -o $(BINARY)
+
+include Makefile.test

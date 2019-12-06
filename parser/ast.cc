@@ -17,6 +17,10 @@ ClassDeclaration::ClassDeclaration(ClassName* class_name, ClassName* base_class,
                                    std::vector<MemberDeclaration*> member_declarations) :
         class_name(class_name), base_class(base_class), member_declarations(member_declarations) {};
 
+llvm::Value* ClassDeclaration::generate_code(GeneratorContext &context) {
+    return NULL;
+}
+
 
 Program::Program(std::vector<ClassDeclaration*> classes) :
         classes(classes) {};
