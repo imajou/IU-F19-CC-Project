@@ -1,5 +1,7 @@
 #include "ast.hh"
 
+#include <llvm/IR/Constants.h>
+
 
 Node::Node() {};
 
@@ -18,6 +20,11 @@ ClassDeclaration::ClassDeclaration(ClassName* class_name, ClassName* base_class,
 
 Program::Program(std::vector<ClassDeclaration*> classes) :
         classes(classes) {};
+
+llvm::Value* Program::generate_code(GeneratorContext &context) {
+    llvm::Value *two = llvm::ConstantInt::get(llvm::Type::getInt32Ty(context.llvm_context), 2);
+    return two;
+}
 
 
 Identifier::Identifier(std::string name) :

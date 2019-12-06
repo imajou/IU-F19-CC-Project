@@ -15,4 +15,5 @@ add_executable(IU_F19_CC_Project
         lexer/lexer.cc lexer/lexer.hh
         lexer/checkers.cc lexer/checkers.hh
         parser/ast.cc parser/ast.hh
+        parser/generator.cc parser/generator.hh
         main.cc)

@@ -1,21 +1,29 @@
 #ifndef AST_H_
 #define AST_H_
 
+#include <llvm/IR/Module.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
 
+#include "generator.hh"
+
 
 class Node {
 public:
     Node();
+
+    // virtual llvm::Value* generate_code(GeneratorContext& context);
 };
 
 
 class BodyEntry : public Node {
 public:
     BodyEntry();
+
+    // llvm::Value* generage_code();
 };
 
 
@@ -76,6 +84,7 @@ public:
     std::vector<ClassDeclaration*> classes;
 
     Program(std::vector<ClassDeclaration*> classes);
+    llvm::Value* generate_code(GeneratorContext &context);
 };
 
 

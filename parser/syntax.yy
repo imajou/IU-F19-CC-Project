@@ -46,11 +46,12 @@
 
 
 %code {
+    #include <vector>
     #include "driver.hh"
   	#include "ast.hh"
 
-  	Program *program_root;
     yy::parser::symbol_type yylex(Driver& driver);
+  	Program *program_root;
 }
 
 // Define a token prefix to avoid collisions
