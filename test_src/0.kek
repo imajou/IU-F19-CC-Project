@@ -1,0 +1,97 @@
+class Boolean is
+    var value : Boolean
+end
+
+class Integer is
+    var value : Integer
+end
+
+class Real is
+    var value : Real
+end
+
+class Animal is
+
+    var iq : Integer
+	var alive : Boolean
+    var age : Integer
+    var weight : Real
+    var sex : Boolean
+
+	this (iq_p : Integer, alive_p : Boolean, age_p : Integer, weight_p : Real, sex_p : Boolean) is
+    	iq := iq_p
+        alive := alive_p
+        age := age_p
+        weight := weight_p
+        sex := sex_p
+        return this
+    end
+end
+
+class Human extends Animal is
+	var knowLanguage : true
+    var status : 0
+    this (iq_p : Integer, alive_p : Boolean, age_p : Integer, weight_p : Real, sex_p : Boolean, knowLanguage_p : Boolean, status_p : Integer) is
+        iq := iq_p
+        alive := alive_p
+        age := age_p
+        weight := weight_p
+        sex := sex_p
+        status := status_p
+        knowLanguage := knowLanguage_p
+        return this
+    end
+end
+
+
+class Student extends Human is
+	var averageSleep : 3
+    var averagePoints : 70.0
+    this (iq_p : Integer, alive_p : Boolean, age_p : Integer, weight_p : Real, sex_p : Boolean, knowLanguage_p : Boolean, status_p : Integer, averageSleep_p : Integer, averagePoints_p : Real) is
+        iq := iq_p
+        alive := alive_p
+        age := age_p
+        weight := weight_p
+        sex := sex_p
+        status := status_p
+        knowLanguage := knowLanguage_p
+        averageSleeep := averageSleeep_p
+        averagePoints := averagePoints_p
+        return this
+    end
+end
+
+class Employee extends Human is
+	var salary : 2000
+    var loveWork : false
+    this (iq_p : Integer, alive_p : Boolean, age_p : Integer, weight_p : Real, sex_p : Boolean, knowLanguage_p : Boolean, status_p : Integer, salary_p : Integer, loveWork_p : Boolean) is
+        iq := iq_p
+        alive := alive_p
+        age := age_p
+        weight := weight_p
+        sex := sex_p
+        status := status_p
+        knowLanguage := knowLanguage_p
+        salary := salary_p
+        loveWork := loveWork_p
+        return this
+    end
+end
+
+class Chief extends Employee is
+	var goodChief : true
+	this (iq_p : Integer, alive_p : Boolean, age_p : Integer, weight_p : Real, sex_p : Boolean, knowLanguage_p : Boolean, status_p : Integer, salary_p : Integer, loveWork_p : Boolean, goodChief_p : Boolean) is
+        iq := iq_p
+        alive := alive_p
+        age := age_p
+        weight := weight_p
+        sex := sex_p
+        status := status_p
+        knowLanguage := knowLanguage_p
+        salary := salary_p
+        loveWork := loveWork_p
+        goodChief := goodChief_p
+        return this
+    end
+
+end
