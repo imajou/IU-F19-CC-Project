@@ -7,6 +7,7 @@
 
 #include <map>
 #include <stack>
+#include <string>
 
 class Program;
 
@@ -22,13 +23,17 @@ public:
 class GeneratorContext {
     llvm::Function *main_function;
 
+    std::string file_in;
+
     std::stack<GeneratorBlock> blocks;
+
+    llvm::raw_fd_ostream *out;
 
 public:
     llvm::LLVMContext llvm_context;
     llvm::Module *module;
 
-    GeneratorContext();
+    GeneratorContext(std::string file_in);
 
     void generate_code(Program& root);
 

@@ -4,6 +4,8 @@
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/ExecutionEngine/GenericValue.h>
+#include <llvm/Support/raw_ostream.h>
+#include <llvm/ADT/StringRef.h>
 
 #include <iostream>
 #include <vector>
@@ -14,7 +16,10 @@ GeneratorBlock::GeneratorBlock(llvm::BasicBlock *llvm_block) {
 }
 
 
-GeneratorContext::GeneratorContext() {
+GeneratorContext::GeneratorContext(std::string file_in) {
+    this->file_in = file_in;
+    std::error_code EC;
+    this->out = new llvm::raw_fd_ostream(llvm::StringRef(file_in + ".ll"), EC, llvm::sys::fs::F_None);
     module = new llvm::Module("main", llvm_context);
 }
 
@@ -38,8 +43,7 @@ void GeneratorContext::generate_code(Program &root) {
     pop_block();
 
     // Print the resulting program
-    std::cout << "\n-----------------\n" << std::endl;
-    module->print(llvm::errs(), nullptr);
+    module->print(*out, nullptr);
 }
 
 

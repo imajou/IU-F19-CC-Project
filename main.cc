@@ -8,9 +8,11 @@ extern Program *program_root;
 
 int main(int argc, char *argv[]) {
     Driver driver;
-    driver.parse(argv[1]);
+    std::string file_in = argv[1];
 
-    GeneratorContext context;
+    driver.parse(file_in);
+
+    GeneratorContext context(file_in);
     context.generate_code(*program_root);
 
     return 0;
