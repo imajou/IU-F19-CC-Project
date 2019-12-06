@@ -11,8 +11,10 @@
 %define api.value.type variant
 
 %code requires {
+    #include <vector>
     #include <string>
     class Driver;
+    class ClassDeclaration;
 }
 
 // The parsing context
@@ -22,7 +24,8 @@
 %code {
     #include "driver.hh"
   	#include "ast.hh"
-  	Node *programRoot;
+
+  	Program *program_root;
     yy::parser::symbol_type yylex(Driver& driver);
 }
 
@@ -52,171 +55,177 @@
 // The EOF token
 %token END_OF_FILE 0
 
-%start compilation_unit
+%type <std::vector<ClassDeclaration*>> ClassDeclarations
+
+%start CompilationUnit
 
 %%
 
-compilation_unit
-    : ClassDeclarations {programRoot = $1;}
+CompilationUnit
+    : ClassDeclarations { program_root = new Program($1); }
     ;
 
 
 ClassDeclarations
-    : /* empty */ {$$ = nullptr}
-    | AssertClass ClassDeclarations  { std::vector<ClassDeclaration> a; $$ = Program(a.push_back($1);)}
+    : /* empty */ { $$ = std::vector<ClassDeclaration>(); }
+    | AssertClass ClassDeclarations  { $2.push_back($1); $$ = $2; }
     ;
 
 AssertClass
-    : CLASS IDENTIFIER Extension ClassBody { $$ = ClassDeclaration($2, $3, $4);}
+    : CLASS ClassName Extension ClassBody { $$ = new ClassDeclaration($2, $3, $4); }
     ;
 
 Extension
     : /* empty */
-    | EXTENDS Type {$$ = ClassName($2);}
+    | EXTENDS ClassName { $$ = $2; }
+    ;
+
+ClassName
+    : Identifier { $$ = new ClassName($1); }
     ;
 
 ClassBody
-    : IS              END {$$ = nullptr}
-    | IS ClassMembers END {$$ = $2;}
+    : IS ClassMembers END { $$ = $2; }
     ;
 
 ClassMembers
-    :              ClassMember {ClassDeclaration c = ClassDeclaration() ; $$ = c.member_declarations.push_back($<ClassMember>1)}
-    | ClassMembers ClassMember {$1.push_back($<ClassMember>2)}
+    : /* empty */ { $$ = std::vector<MemberDeclaration*>(); }
+    | ClassMember ClassMembers { $2.push_back($1); $$ = $2; }
     ;
 
 ClassMember
-    : VariableDeclaration {$$ = $1}
-    | MethodDeclaration {$$ = $1}
-    | ConstructorDeclaration {$$ = $1}
+    : VariableDeclaration { $$ = $1; }
+    | MethodDeclaration { $$ = $1; }
+    | ConstructorDeclaration { $$ = $1; }
     ;
 
 VariableDeclaration
-    : VAR IDENTIFIER COLON Expression {$$ = VariableDeclaration($2, $4);}
+    : VAR Identifier COLON Expression { $$ = new VariableDeclaration($2, $4); }
     ;
 
 
 MethodDeclaration
-    : METHOD IDENTIFIER Parameters ReturnType MethodBody {$$ = MethodDeclaration($2, $3, $4);}
+    : METHOD Identifier Parameters ReturnType MethodBody { $$ = new MethodDeclaration($2, $3, $4, $5); }
     ;
 
 ConstructorDeclaration
-    : THIS Parameters MethodBody {$$ = ConstructorDeclaration($2, $3)}
+    : THIS Parameters MethodBody { $$ = new ConstructorDeclaration($2, $3); }
     ;
 
 ReturnType
-    : /* empty */
-    | COLON Type {$$ = $1;}
+    : /* empty */ { $$ = nullptr; }
+    | COLON ClassName { $$ = $2; }
     ;
 
 Parameters
-    : LEFT_PARENTHESIS               RIGHT_PARENTHESIS {$$ = nullptr}
-    | LEFT_PARENTHESIS ParameterList RIGHT_PARENTHESIS {$$ = $2}
+    : LEFT_PARENTHESIS               RIGHT_PARENTHESIS { $$ = nullptr; }
+    | LEFT_PARENTHESIS ParameterList RIGHT_PARENTHESIS { $$ = $2; }
     ;
 
 ParameterList
-    :                     Parameter {$$ = ParameterList($1);}
-    | ParameterList COMMA Parameter {$$ = ParameterList($1, $3);}
+    :                     Parameter { $$ = std::vector<Parameter*>{$1}; }
+    | ParameterList COMMA Parameter { $1.push_back($3); $$ = $1; }
     ;
 
 Parameter
-    : IDENTIFIER COLON Type {$$ = Parameter($1, $3);}
+    : Identifier COLON ClassName { $$ = new Parameter($1, $3); }
     ;
 
 
 MethodBody
-    : IS               END {$$ = nullptr}
-    | IS MethodMembers END {$$ = $1}
+    : IS MethodMembers END { $$ = new Body($1); }
     ;
 
 
 MethodMembers
-    :               MethodMember {Body b = Body(); $$ = b.entries.push_back($<MethodMember>1)}
-    | MethodMembers MethodMember {$1.push_back($<MethodMember>2)}
+    : /* empty */ { $$ = std::vector<BodyEntry*>(); }
+    | MethodMember MethodMembers { $2.push_back($1); $$ = $2; }
     ;
 
 MethodMember
-    : ValueAssignment {$$ = $1}
-    | IfMethodMember {$$ = $1}
-    | WhileMethodMember {$$ = $1}
-    | ReturnMethodMember {$$ = $1}
-    | Expression {$$ = $1}
-    | VariableDeclaration {$$ = $1}
+    : ValueAssignment { $$ = $1; }
+    | IfMethodMember { $$ = $1; }
+    | WhileMethodMember { $$ = $1; }
+    | ReturnMethodMember { $$ = $1; }
+    | Expression { $$ = $1; }
+    | VariableDeclaration { $$ = $1; }
     ;
 
 ValueAssignment
-    : IDENTIFIER ASSIGNMENT Expression {$$ = Assignment($1, $3);}
+    : Identifier ASSIGNMENT Expression { $$ = new Assignment($1, $3); }
     ;
 
 
 Primary
-    : IDENTIFIER
-    | IntegerLiteral {$$ = IntegerLiteral($1);}
-    | RealLiteral {$$ = RealLiteral($1);}
-    | BooleanVal {$$ = BooleanLiteral($1);}
-    | THIS
-    ;
-
-Type
-    : IDENTIFIER
-    | IntegerLiteral {$$ = IntegerLiteral($1);}
-    | RealLiteral {$$ = RealLiteral($1);}
-    | BooleanVal {$$ = BooleanVal($1);}
+    : Identifier { $$ = $1; }
+    | IntegerLiteral { $$ = $1; }
+    | RealLiteral { $$ = $1; }
+    | BooleanVal { $$ = $1; }
+    | THIS { $$ = new SelfPointer(); }
     ;
 
 IfMethodMember
-   : IF Expression THEN MethodMember END {$$ = IfStatement($2, $4);}
-   | IF Expression THEN MethodMember ELSE MethodMember END {$$ = IfStatement($2, $4, $6);}
-   ;
+    : IF Expression THEN MethodMembers END { $$ = new IfStatement($2, $4); }
+    | IF Expression THEN MethodMembers ELSE MethodMembers END { $$ = new IfStatement($2, $4, $6); }
+    ;
 
 WhileMethodMember
-   : WHILE Expression LOOP MethodMember END {$$ = WhileStatement($2, $4);}
-   ;
+    : WHILE Expression LOOP MethodMembers END { $$ = new WhileStatement($2, $4); }
+    ;
 
 ReturnMethodMember
-   : RETURN Expression {$$ = ReturnStatement($2);}
-   | RETURN
-   ;
+    : RETURN Expression { $$ = new ReturnStatement($2); }
+    | RETURN { $$ = nullptr; }
+    ;
 
 ConstructorCall
-   : IDENTIFIER LEFT_PARENTHESIS              RIGHT_PARENTHESIS {$$ = nullptr;}
-   | IDENTIFIER LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS {$$ = Call($1, $3;}
-   ;
+    : ClassName Call { $$ = new ConstructorCall($1, $2); }
+    ;
 
-MethodCalls
-   : MethodCall {$$ = $1;}
-   | MethodCalls DOT MethodCall {$$ = MethodCalls($1, $3);}
-   ;
+ClassExpressions
+    : ClassExpression { $$ = $1; }
+    | ClassExpressions DOT ClassExpression { $3->base_expression = $1; $$ = $3; }
+    ;
 
-MethodCall
-   : IDENTIFIER LEFT_PARENTHESIS              RIGHT_PARENTHESIS {$$ = nullptr;}
-   | IDENTIFIER LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS {$$ = Call($1, $3;}
-   ;
+ClassExpression
+    : Identifier { $$ = new Attribute($1); }
+    | Identifier Call { $$ = new MethodCall($1, $2); }
+    ;
+
+Call
+    : LEFT_PARENTHESIS              RIGHT_PARENTHESIS { $$ = std::vector<Expression>(); }
+    | LEFT_PARENTHESIS ArgumentList RIGHT_PARENTHESIS { $$ = $1; }
+    ;
+
 
 ArgumentList
-   :                    Expression {$$ =$1;}
-   | ArgumentList COMMA Expression {$$ = ArgumentList($1, $3)}
-   ;
+    :                    Expression { $$ = std::vector<Expression>{$1}; }
+    | ArgumentList COMMA Expression { $1.push_back($2); $$ = $1; }
+    ;
 
 
 Expression
-   : Primary DOT MethodCalls
-   | Primary
-   | ConstructorCall
-   ;
+    : Primary { $$ = $1; }
+    | Primary DOT ClassExpressions { $3->base_expression = $1; $$ = $3; }
+    | ConstructorCall { $$ = $1; }
+    ;
 
 BooleanVal
-   : TRUE
-   | FALSE
-   ;
+    : TRUE { $$ = new BooleanLiteral(true); }
+    | FALSE { $$ = new BoolearLiteral(false); }
+    ;
 
 IntegerLiteral
-   : INTEGER
-   ;
+    : INTEGER { $$ = new IntegerLiteral($1); }
+    ;
 
 RealLiteral
-   : REAL
-   ;
+    : REAL { $$ = new RealLiteral($1); }
+    ;
+
+Identifier
+    : IDENTIFIER { $$ = new Identifier($1); }
+    ;
 
 %%
 
